@@ -13,6 +13,10 @@
         <div class="corl">
             <p>CoRL 2023 Paper Submission [ID: 476]</p>
         </div>
+        <div class="button-container">
+            <a href="" class="button">Code (will release)</a>
+            <a href="" class="button">Data (will release)</a>
+        </div>
         <div id="abstract" class="grid-container">
             <p>
                 We present a self-supervised sensorimotor pre-training approach for robotics. Our model, called RPT, is a Transformer that operates on sequences of sensorimotor tokens. Given a sequence of camera images, proprioceptive robot states, and past actions, we encode the interleaved sequence into tokens, mask out a random subset, and train a model to predict the masked-out content. We hypothesize that if the robot can predict the missing content it has acquired a good model of the physical world that can enable it to act. RPT is designed to operate on latent visual representations which makes prediction tractable, enables scaling to 10x larger models, and 10 Hz inference on a real robot. To evaluate our approach, we collect a dataset of 20,000 real-world trajectories over 9 months using a combination of motion planning and model-based grasping algorithms. We find that pre-training on this data consistently outperforms training from scratch, leads to 2x improvements in the block stacking task, and has favorable scaling properties.
