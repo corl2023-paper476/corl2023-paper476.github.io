@@ -19,7 +19,7 @@
         </div>
         <div id="abstract" class="grid-container">
             <p>
-                We present a self-supervised sensorimotor pre-training approach for robotics. Our model, called RPT, is a Transformer that operates on sequences of sensorimotor tokens. Given a sequence of camera images, proprioceptive robot states, and past actions, we encode the interleaved sequence into tokens, mask out a random subset, and train a model to predict the masked-out content. We hypothesize that if the robot can predict the missing content it has acquired a good model of the physical world that can enable it to act. RPT is designed to operate on latent visual representations which makes prediction tractable, enables scaling to 10x larger models, and 10 Hz inference on a real robot. To evaluate our approach, we collect a dataset of 20,000 real-world trajectories over 9 months using a combination of motion planning and model-based grasping algorithms. We find that pre-training on this data consistently outperforms training from scratch, leads to 2x improvements in the block stacking task, and has favorable scaling properties.
+                We propose a self-supervised sensorimotor pre-training approach for robotics. Our model, called RPT, is a Transformer that operates on sequences of sensorimotor tokens. Given a sequence of camera images, proprioceptive robot states, and past actions, we encode the interleaved sequence into tokens, mask out a random subset, and train a model to predict the masked-out content. We hypothesize that if the robot can predict the missing content it has acquired a good model of the physical world that can enable it to act. RPT is designed to operate on latent visual representations which makes prediction tractable, enables scaling to 10x larger models, and 10 Hz inference on a real robot. To evaluate our approach, we collect a dataset of 20,000 real-world trajectories over 9 months using a combination of motion planning and model-based grasping algorithms. We find that pre-training on this data consistently outperforms training from scratch, leads to 2x improvements in the block stacking task, and has favorable scaling properties.
             </p>
         </div>
     </div>
@@ -41,7 +41,7 @@
     </div>
 
     <p>
-        We propose a self-supervised sensorimotor pre-training approach for robotics. We formulate pre-training via a sensorimotor prediction problem. We hypothesize that if the robot can predict the missing sensorimotor content it has acquired a good model of the physical world that can enable it to act. We instantiate this idea through a masked prediction task, similar to BERT/MAE.
+        We propose a self-supervised sensorimotor pre-training approach for robotics. We formulate pre-training via a sensorimotor prediction problem. We hypothesize that if the robot can predict the missing sensorimotor content it has acquired a good model of the physical world that can enable it to act. We instantiate this idea through a masked prediction task, similar to BERT and MAE.
     </p>
 
     <p>
@@ -91,11 +91,11 @@
     <h1>Model Inference</h1>
 
     <p>
-    We fine-tune the pre-trained model with behavior cloning (BC) on downstream task data. During fine-tuning, we initialize a model that takes the past sensorimotor inputs of the same context length as in pre-training with the pre-trained weights. We replace the input action token in the last time step with a mask token. We only keep the output token that corresponds to the mask input token, and discard all the other output tokens.
+    We fine-tune the pre-trained model with behavior cloning (BC) on downstream tasks. During fine-tuning, we construct a model that takes the past sensorimotor inputs of the same context length as in pre-training and initialize it with the pre-trained weights. We replace the input action token in the last time step with a mask token. We only keep the output token that corresponds to the mask input token, and discard all the other output tokens.
     </p>
 
     <p>
-    We perform inference in the autoregressive fashion. Given a set of sensory observations we first predict an action. We then execute the action and feed back both the action and the new set of sensory observations to the model. We then repeat this process until the completion of the task.
+    We perform inference in the autoregressive fashion. Given a set of sensory observations we first predict an action. We then execute the action and feed back both the action and the new set of sensory observations to the model. We repeat this process iteratively to complete the task.
     </p>
 
     <div class="approach">
@@ -104,7 +104,7 @@
                 <source src="assets/inference_animation.mp4" type="video/mp4">
             </video>
             <div class="caption">
-                <p>At inference time, we only provide the mask token for the last action. After we execute the predicted action, we feed back the action and the new sensory observations. And the whole process continues.</p>
+                <p>At inference time, we only provide the mask token for the last action. After we predict an action, we execute it and feed back to the model with the new sensory observations. We repeat this process iteratively until the task is complete.</p>
             </div>
         </div>
     </div>
@@ -114,7 +114,7 @@
     <h1>Transfer to Downstream Tasks</h1>
 
     <p>
-    We consider three different tasks for downstream evaluation: picking, stacking, and destacking. We note that all of our policies predict actions in the continuous joint position space. We do not make any domain or task-specific assumptions in the action space. The policies run at 10 Hz and the videos are shown at 1x.
+    We consider three different tasks for downstream evaluation: picking, stacking, and destacking. We note that all of our policies predict actions in the continuous joint position space. We do not make any domain or task-specific assumptions in the observation space or in the action space. Our policies run at 10 Hz and we show example videos below at 1x.
     </p>
 
     <div class="slider_section">
@@ -133,7 +133,7 @@
                         </div> </div>
                         <div class="div-block-9"> <div class="video_class w-embed">
                             <video width=100% height=100% autoplay muted controls loop preload="metadata">
-                                <source src="assets/franka/pick-gray/IMG_9638-High_Compression_720p.mp4"
+                                <source src="assets/franka/stack/IMG_1599-High_Compression_720p.mp4"
                                         type="video/mp4">
                                 Your browser does not support the video tag.
                             </video>
@@ -141,14 +141,14 @@
                     </div>
                     <div class="w-slide"> <div class="div-block-9"> <div class="video_class w-embed">
                         <video width=100% height=100% autoplay muted controls loop preload="metadata">
-                            <source src="assets/franka/pick-red/IMG_9631-High_Compression_720p.mp4"
+                            <source src="assets/franka/destack/IMG_1633-High_Compression_720p.mp4"
                                     type="video/mp4">
                             Your browser does not support the video tag.
                         </video>
                     </div> </div> </div>
                     <div class="w-slide"> <div class="div-block-9"> <div class="video_class w-embed">
                         <video width=100% height=100% autoplay muted controls loop preload="metadata">
-                            <source src="assets/franka/pick-green/IMG_9619-High_Compression_720p.mp4"
+                            <source src="assets/franka/pick-fruit/IMG_9580-High_Compression_720p.mp4"
                                     type="video/mp4">
                             Your browser does not support the video tag.
                         </video>
@@ -169,6 +169,27 @@
                     </div> </div> </div>
                     <div class="w-slide"> <div class="div-block-9"> <div class="video_class w-embed">
                         <video width=100% height=100% autoplay muted controls loop preload="metadata">
+                            <source src="assets/franka/pick-gray/IMG_9638-High_Compression_720p.mp4"
+                                    type="video/mp4">
+                            Your browser does not support the video tag.
+                        </video>
+                    </div> </div> </div>
+                    <div class="w-slide"> <div class="div-block-9"> <div class="video_class w-embed">
+                        <video width=100% height=100% autoplay muted controls loop preload="metadata">
+                            <source src="assets/franka/pick-red/IMG_9631-High_Compression_720p.mp4"
+                                    type="video/mp4">
+                            Your browser does not support the video tag.
+                        </video>
+                    </div> </div> </div>
+                    <div class="w-slide"> <div class="div-block-9"> <div class="video_class w-embed">
+                        <video width=100% height=100% autoplay muted controls loop preload="metadata">
+                            <source src="assets/franka/pick-green/IMG_9619-High_Compression_720p.mp4"
+                                    type="video/mp4">
+                            Your browser does not support the video tag.
+                        </video>
+                    </div> </div> </div>
+                    <div class="w-slide"> <div class="div-block-9"> <div class="video_class w-embed">
+                        <video width=100% height=100% autoplay muted controls loop preload="metadata">
                             <source src="assets/franka/pick-wood/IMG_9623-High_Compression_720p.mp4"
                                     type="video/mp4">
                             Your browser does not support the video tag.
@@ -176,35 +197,7 @@
                     </div> </div> </div>
                     <div class="w-slide"> <div class="div-block-9"> <div class="video_class w-embed">
                         <video width=100% height=100% autoplay muted controls loop preload="metadata">
-                            <source src="assets/franka/stack/IMG_1599-High_Compression_720p.mp4"
-                                    type="video/mp4">
-                            Your browser does not support the video tag.
-                        </video>
-                    </div> </div> </div>
-                    <div class="w-slide"> <div class="div-block-9"> <div class="video_class w-embed">
-                        <video width=100% height=100% autoplay muted controls loop preload="metadata">
-                            <source src="assets/franka/destack/IMG_1629-High_Compression_720p.mp4"
-                                    type="video/mp4">
-                            Your browser does not support the video tag.
-                        </video>
-                    </div> </div> </div>
-                    <div class="w-slide"> <div class="div-block-9"> <div class="video_class w-embed">
-                        <video width=100% height=100% autoplay muted controls loop preload="metadata">
-                            <source src="assets/franka/destack/IMG_1633-High_Compression_720p.mp4"
-                                    type="video/mp4">
-                            Your browser does not support the video tag.
-                        </video>
-                    </div> </div> </div>
-                    <div class="w-slide"> <div class="div-block-9"> <div class="video_class w-embed">
-                        <video width=100% height=100% autoplay muted controls loop preload="metadata">
-                            <source src="assets/franka/pick-fruit/IMG_9580-High_Compression_720p.mp4"
-                                    type="video/mp4">
-                            Your browser does not support the video tag.
-                        </video>
-                    </div> </div> </div>
-                    <div class="w-slide"> <div class="div-block-9"> <div class="video_class w-embed">
-                        <video width=100% height=100% autoplay muted controls loop preload="metadata">
-                            <source src="assets/franka/pick-fruit/IMG_9595-High_Compression_720p.mp4"
+                            <source src="assets/franka/pick-yellow-wood/IMG_9633-High_Compression_720p.mp4"
                                     type="video/mp4">
                             Your browser does not support the video tag.
                         </video>
@@ -212,14 +205,14 @@
                     <div class="w-slide">
                         <div class="div-block-9"> <div class="video_class w-embed">
                             <video width=100% height=100% autoplay muted controls loop preload="metadata">
-                                <source src="assets/franka/pick-blue/IMG_1586-High_Compression_720p.mp4"
+                                <source src="assets/franka/destack/IMG_1629-High_Compression_720p.mp4"
                                         type="video/mp4">
                                 Your browser does not support the video tag.
                             </video>
                         </div> </div>
                         <div class="div-block-9 last_block"> <div class="video_class w-embed">
                             <video width=100% height=100% autoplay muted controls loop preload="metadata">
-                                <source src="assets/franka/pick-yellow-wood/IMG_9633-High_Compression_720p.mp4"
+                                <source src="assets/franka/pick-fruit/IMG_9595-High_Compression_720p.mp4"
                                         type="video/mp4">
                                 Your browser does not support the video tag.
                             </video>
@@ -235,7 +228,7 @@
 
     <h1>Outperforms Training from Scratch</h1>
     <p>
-        We study the effectiveness of masked pre-training by comparing fine-tuning performances with or without pre-training. We consider three evaluation tasks of increasing difficulty: picking, destacking, and stacking. To isolate the effect of pre-training alone, we use unseen data from the same task for pre-training and fine-tune on held-out data. Below, we show the performance as the number of fine-tuning demonstrations increases. We observe that pre-training leads to consistent improvements over training from scratch, across tasks and data regimes. Moreover, the gains are larger for the harder block stacking task.
+        We study the effectiveness of our method by comparing fine-tuning performances with or without sensorimotor pre-training. We consider three evaluation tasks of increasing difficulty: picking, destacking, and stacking. We use unseen and held-out data from the same task for fine-tuning. Below, we show the performance as the number of fine-tuning demonstrations increases. We observe that pre-training leads to consistent improvements over training from scratch, across tasks and data regimes. Moreover, the gains are larger for the harder block stacking task.
     </p>
     <div class="barplot">
         <div class="image_container">
@@ -263,7 +256,7 @@
 
     <h1>Transfer Across Labs</h1>
 
-    <p>The training data used in our experiments has been collected in a single lab using a single robot. We now evaluate the performance of our pre-trained reprentations when transferring to the same robot type in a different lab environment. Here the background visuals and the camera positions vary as well. We find that our approach considerably outperforms training from scratch.</p>
+    <p>The data collection used in our experiments has been collected in a single lab using a single robot. We now evaluate the performance of our pre-trained reprentations when transferring to the same robot type in a different lab environment. The background visuals and the camera positions vary as well. We find that our approach considerably outperforms training from scratch.</p>
 
     <div class="transfer">
         <div class="video_container">
@@ -281,7 +274,7 @@
 
     <h1>Transfer Across Robots</h1>
 
-    <p>Next, we take this idea a step further and evaluate transfer across different robots. Specifically, we perform our pre-training appraoch on sensorimotor trajectories from the xArm robot and evaluate transfer to our Franka robot. We note that the gap here is very large (different robot, different camera, different background, different tasks, different data recording frequency).</p>
+    <p>Next, we take this idea a step further and evaluate transfer across different robots. Specifically, we pre-train our model on sensorimotor trajectories from an xArm robot and evaluate transfer to the Franka robot. Note that the gap between these settings is large (different robot, different camera, different background, different tasks, different data recording frequency).</p>
 
     <div class="transfer">
         <div class="video_container">
@@ -297,11 +290,11 @@
         </div>
     </div>
 
-    <p>We find that pre-training on this data considerably outperforms no pre-training (lower bound) and comes close to pre-training on the original data (upper bound). This is a promising signal for applying our approach to diverse robot datasets in the future.</p>
+    <p>We find that pre-training on this data considerably outperforms training from scratch (lower bound) and comes close to pre-training on the original data (upper bound). This is a promising signal for applying our approach to diverse robot datasets in the future.</p>
 
     <h1>Emergent Self-Correction Behavior</h1>
 
-    <p>We observe that our pre-trained models exhibit certain types of self-correction behavior. We show two examples below. On the left, the robot first fails to grasp the lemon, moves back, and proceeds to grasp the lemon succefully. On the right, the robot first places the blue cube roughly onto the yellow cube and then goes back to refine the placement. </p>
+    <p>Interestingly, we observe that our pre-trained models exhibit certain types of self-correction behaviors. We show two examples below. On the left, the robot fails to grasp the lemon initially, moves back, and proceeds to grasp the lemon succefully. On the right, the robot first places the blue cube roughly onto the yellow cube and then goes back to refine the placement. </p>
 
     <div class="xarmfail">
         <div class="video_container">
@@ -316,7 +309,7 @@
         </div>
     </div>
 
-    <p>Since our models were pre-trained and fine-tuned only with succesful trajectories, this type of behaviors has not been seen during training. Moreover, some of the states are not present at all (e.g., starting a grasp or moving up with a closed gripper). We did not expect this behavior to emerge and have only observed it in the case of the pre-trained models.</p>
+    <p>Since our models were pre-trained and fine-tuned only with succesful trajectories, this type of behaviors have not been seen during training. Moreover, some of the states were not present in the data at all (e.g., starting a grasp or moving up with a fully closed gripper). We did not expect this behavior to emerge and have only observed it in the case of the pre-trained models.</p>
 
     <h1>Failure Cases</h1>
     <p> 
